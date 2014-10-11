@@ -1,0 +1,13 @@
+{
+  "private": {
+    "SOLR_CONFIG": {
+      "host": "localhost",
+      "port": 8080
+    },
+    "SOLR_CREDENTIALS": {
+      "username": "",
+      "password": ""
+    },
+    "AMQP_CONNECTION": {}
+  }
+}
