@@ -2,8 +2,6 @@
 amqp2solr is a library both for querying a SOLR core and queueing (add) queries for delayed execution. 
 It is a wrapper, which aims to make delayed/remote execution of solr queries more seamless.
 
-    npm install amqp2solr
-
 ## Usage
     var amqp2solr = require('amqp2solr')({ config, logger });
     
