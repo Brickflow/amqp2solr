@@ -7,11 +7,21 @@ It is a wrapper, which aims to make delayed/remote execution of solr queries mor
 ## Usage
     var amqp2solr = require('amqp2solr')({ config, logger });
     
-    // The client
-    amqp2solr.getResource({ 
+    // Create a resource
+    var blogResource = amqp2solr.getResource({ 
       ...
     });
-    amqp2solr.update(QUEUE_NAME, blogResource.encode)
+    
+    // HOST A: Send delayed queries
+    amqp2solr.update(QUEUE_NAME, blogResource.encode(document));
+    // ... which is identical to ...
+    amqp2solr.publish('add', QUEUE_NAME, blogResource.encode(document))
+    
+    
+    // HOST B: The daemon/listener/server
+    amqp2solr.getResource({
+      
+    });
     
     
 
