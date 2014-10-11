@@ -57,16 +57,17 @@ The options parameter accepts the following fields:
   - it's values are field names in SOLR
   - Typically, this can be used to adapt to the default solr schema.xml, eg: ``{email: 'email_s'}``
   - Currently, all the fields need to be defined here, not only the mapped ones.
-- ``transformations`` is an object which can be used for transforming the data before/after solr.
+- ``transformations`` is an optional object which can be used for transforming the data before/after solr.
   - it's keys are keys of your existing model
   - it's values are objects with 2 fields:
   - ``formSolr: function(value) {return value; }``
   - ``toSolr: function(value) {return value; }``
+- ``mlt`` is an optional more like this setting to be used as default in the ``recommend`` method.
 
 It return an object with the following methods:
 
 - ``add(doc, cb)`` adds a document to the core
-- ``recommend(q, [mlt,] cb)`` runs a moreLikeThis query, gets the mlt parameter from config if none given
+- ``recommend(q, [mlt,] cb)`` runs a moreLikeThis query, mlt defaults to ``options.mlt`` if none given
 - ``find(q, cb)`` finds some fields
 - ``findById(id, cb)`` finds by id
 - ``deleteById(id, cb)`` deletes by id
