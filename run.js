@@ -38,10 +38,10 @@ var blogResource = amqp2solr.getResource({
 //  hashtags: [{label: 'milf'}, {label: 'pron'}]
 //}));
 //
-//amqp2solr.listen('solr-blog', blogResource, function(err, queue) {
-//  console.log('solr-q-mock', err, queue);
-//});
-//
+amqp2solr.listen('solr-blog', blogResource, function(err, queue) {
+  console.log('solr-q-mock', err, queue);
+});
+
 blogResource.recommend({tumblrUsername: 'ifroz'}, function() {
   console.log('recommend', arguments);
 });
