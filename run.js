@@ -30,18 +30,18 @@ var blogResource = amqp2solr.getResource({
   }
 });
 
-amqp2solr.update('solr-blog', blogResource.encode({
-  tumblrUsername: 'ifroz',
-  email: 'ifrozen@gmail.com',
-  createdAt: new Date(),
-  updatedAt: new Date(),
-  hashtags: [{label: 'milf'}, {label: 'pron'}]
-}));
-
-amqp2solr.listen('solr-blog', blogResource, function(err, queue) {
-  console.log('solr-q-mock', err, queue);
-});
-
+//amqp2solr.update('solr-blog', blogResource.encode({
+//  tumblrUsername: 'ifroz',
+//  email: 'ifrozen@gmail.com',
+//  createdAt: new Date(),
+//  updatedAt: new Date(),
+//  hashtags: [{label: 'milf'}, {label: 'pron'}]
+//}));
+//
+//amqp2solr.listen('solr-blog', blogResource, function(err, queue) {
+//  console.log('solr-q-mock', err, queue);
+//});
+//
 blogResource.recommend({tumblrUsername: 'ifroz'}, function() {
   console.log('recommend', arguments);
 });
