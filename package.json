@@ -2,7 +2,7 @@
   "name": "amqp2solr",
   "version": "0.0.3",
   "description": "Pulls from an AMQP queue and pushes to Solr",
-  "main": "lib/amqp2solr.js",
+  "main": "lib/index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
