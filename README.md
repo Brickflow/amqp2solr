@@ -2,50 +2,54 @@
 amqp2solr is a library both for querying a SOLR core and queueing (add) queries for delayed execution. 
 It is a wrapper, which aims to make delayed/remote execution of solr queries more seamless.
 
-## Usage
-    var amqp2solr = require('amqp2solr')({ config, logger });
-    
-    // Create a resource
-    var blogResource = amqp2solr.getResource({ 
-      ...
-    });
-    
-    // HOST A: Send delayed queries
-    amqp2solr.update(QUEUE_NAME, blogResource.encode(document));
-    // ... which is identical to ...
-    amqp2solr.publish('add', QUEUE_NAME, blogResource.encode(document))
-    
-    
-    // HOST B: The daemon/listener/server
-    amqp2solr.listen({
-      
-    });
-    
-
-Some dependencies can be injected if you wish, e.g.:
+## Basic usage
 
     var config = {
       get: function(key) {
         return {
           'private:AMQP_CONNECTION': {},
           'private:SOLR_CREDENTIALS: {username, password},
-          'private:SOLR_CONFIG': {host, core ...}
-        }[key];``
+          'private:SOLR_CONFIG': {host, ... }
+        }[key];
       }
-    }
+    };
+    var dependencies = { config, logger, amqp };
     
-    var _ = require('lodash');
-    var logger = dependencies.logger || _(['info', 'debug', 'warning', 'error']).
-      zipObject().mapValues(function(x, level) {
-    return _.partial(console.log, level + ':');
-    }).value();
-
-The dependencies parameter can be used for overriding ``amqp``, ``config`` or ``logger``.
+    var amqp2solr = require('amqp2solr')(dependencies);
+    
+    var resourceParams = { core: 'blogs' };
+    
+The dependencies parameter can be used for overriding ``config`` and/or ``logger``.
 
 - ``logger`` should have ``info``, ``error`` and ``debug`` methods. It defaults to console.log.
 - ``config`` assumed to have a ``get`` method. (nconf is used)
 
-### ampq2solr.getResource(options)
+### ``getResource(options)`` and query locally
+
+    var blogResource = amqp2solr.getResource(resourceParams);
+    blogResource.add({id: 'example', someField: 1}, cb);
+    blogResource.createOrUpdate({id: 'example'}, {someOtherField: 1}, cb);
+
+### ``getQueue([queueName,] blogResourceOrDescriptor)`` and queue queries 
+
+    // Create a resource ...
+    var blogResource = amqp2solr.getResource(resourceParams);
+    
+    // ... and map it to the resource ...
+    var blogQueue = amqp2solr.getQueue(blogResource);
+    // ... optionally with explicitly given AMQP queue name ...
+    var blogQueue = amqp2solr.getQueue(queueName, blogResource);
+    
+You can give resourceParams instead of an actual resource (can be useful in environments where you don't want to use the resource locally.
+    
+    var blogQueue = amqp2solr.getQueue(queueName, resourceParams);
+    
+You can get the resource ``var blogResource = blogQueue.resource;``.
+### ``solrQueue.listen()`` to a queue and parse 
+    
+    amqp2solr.getQueue(queueName, resourceParams).listen(); 
+
+## ``ampq2solr.getResource(options)``
 Returns a solrResource instance. 
 
 The options parameter accepts the following fields:
@@ -62,30 +66,26 @@ The options parameter accepts the following fields:
   - ``toSolr: function(value) {return value; }``
 - ``mlt`` is an optional more like this setting to be used as default in the ``recommend`` method.
 
-It return a ``solrResource`` object;
+It returns a ``solrResource`` object;
 
-### solrResource
+## ``amqp2solr.getQueue([queueName,] solrResourceOrOptions)``
 
-- ``add(doc, cb)`` adds a document to the core
-- ``moreLikeThis(q, [mlt,] cb)`` runs a moreLikeThis query, 
-mlt defaults to ``options.mlt`` if none given. Aliased as ``recommend``.
-- ``update(
-- ``find(q, cb)`` finds some fields by a query or an id
-- ``update(q, cb)`` finds some fields by a query or an id
+Returns a ``solrQueue`` instance. If solrResourceOrOptions is not a 
+solrResource,
+it calls getResource with solrResourceOrOptions.
+
+## ``solrQueue``
+
+``solrQueue`` has exactly the same methods than a ``solrResource``, but it pushes the task to the queue rather than executing it locally.
+
+## ``solrResource``
+- ``add(doc [,cb])``: creates/replaces a document
+- ``find(q [,cb])``: find documents both by query or id
+- ``findAndModify(q, updateParams [, opts ,cb])``: update some fields of existing documents matched by ``find(q)``
+- ``createOrUpdate(q, updateParams, [, cb])``: similar to ``findAndModify``, but this creates a new document if none found.
+- ``moreLikeThis(q, [mlt], cb)``: find similar documents to any document which matches
 - ``delete(id, cb)`` deletes by a query, mapped from ``node-solr-client``
 - ``deleteById(id, cb)`` deletes by id
 - ``encode`` formats the document to solr (transposes field names and performs transformations)
 - ``deocde`` formats the document came back from solr (reverses field names and performs reverse transformations)
-- ``solr`` exposes the wrapped ``node-solr-client``
-
-
-### amqp2solr.listen(queueName, solrResource[, cb])
-This function listens to the queue ``queueName`` on it's AMQP connection and processes queries sent via amqp2solr.
-
-### amqp2solr.publish(action, queueName, payload)
-Sends a message to the queue which the listener will respond to like doing:  ``solrResource[action](payload)``
-
-### amqp2solr.add(queueName, solrResource.encode(document))
-Queues the addition of the document
-solrResource.encode is neccessary for the field mapping and transformations to take place.
- 
+- ``solr`` exposes the wrapped ``node-solr-client`` 
