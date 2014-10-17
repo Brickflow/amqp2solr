@@ -4,33 +4,23 @@ It is a wrapper, which aims to make delayed/remote execution of solr queries mor
 
 ## Basic usage
 
-    var config = {
-      get: function(key) {
-        return {
-          'private:AMQP_CONNECTION': {},
-          'private:SOLR_CREDENTIALS: {username, password},
-          'private:SOLR_CONFIG': {host, ... }
-        }[key];
-      }
-    };
     var dependencies = { config, logger, amqp };
-    
     var amqp2solr = require('amqp2solr')(dependencies);
-    
-    var resourceParams = { core: 'blogs' };
     
 The dependencies parameter can be used for overriding ``config`` and/or ``logger``.
 
 - ``logger`` should have ``info``, ``error`` and ``debug`` methods. It defaults to console.log.
 - ``config`` assumed to have a ``get`` method. (nconf is used)
 
-### ``getResource(options)`` and query locally
+#### ``getResource(options)`` and query locally
 
+    var resourceParams = { core: 'blogs' };
     var blogResource = amqp2solr.getResource(resourceParams);
+    // ... and then ...
     blogResource.add({id: 'example', someField: 1}, cb);
     blogResource.createOrUpdate({id: 'example'}, {someOtherField: 1}, cb);
 
-### ``getQueue([queueName,] blogResourceOrDescriptor)`` and queue queries 
+#### ``getQueue([queueName,] blogResource)`` and queue queries 
 
     // Create a resource ...
     var blogResource = amqp2solr.getResource(resourceParams);
@@ -45,11 +35,11 @@ You can give resourceParams instead of an actual resource (can be useful in envi
     var blogQueue = amqp2solr.getQueue(queueName, resourceParams);
     
 You can get the resource ``var blogResource = blogQueue.resource;``.
-### ``solrQueue.listen()`` to a queue and parse 
+### ``solrQueue.listen()`` to consume a queue
     
     amqp2solr.getQueue(queueName, resourceParams).listen(); 
 
-## ``ampq2solr.getResource(options)``
+## ``getResource(options)``
 Returns a solrResource instance. 
 
 The options parameter accepts the following fields:
@@ -68,16 +58,6 @@ The options parameter accepts the following fields:
 
 It returns a ``solrResource`` object;
 
-## ``amqp2solr.getQueue([queueName,] solrResourceOrOptions)``
-
-Returns a ``solrQueue`` instance. If solrResourceOrOptions is not a 
-solrResource,
-it calls getResource with solrResourceOrOptions.
-
-## ``solrQueue``
-
-``solrQueue`` has exactly the same methods than a ``solrResource``, but it pushes the task to the queue rather than executing it locally.
-
 ## ``solrResource``
 - ``add(doc [,cb])``: creates/replaces a document
 - ``find(q [,cb])``: find documents both by query or id
@@ -89,3 +69,13 @@ it calls getResource with solrResourceOrOptions.
 - ``encode`` formats the document to solr (transposes field names and performs transformations)
 - ``deocde`` formats the document came back from solr (reverses field names and performs reverse transformations)
 - ``solr`` exposes the wrapped ``node-solr-client`` 
+
+## ``getQueue([queueName,] solrResourceOrOptions)``
+
+Returns a ``solrQueue`` instance. If solrResourceOrOptions is not a 
+solrResource,
+it calls getResource with solrResourceOrOptions.
+
+## ``solrQueue``
+
+``solrQueue`` has exactly the same methods than a ``solrResource``, but it pushes the task to the queue rather than executing it locally.
