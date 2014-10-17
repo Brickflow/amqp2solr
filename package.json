@@ -11,6 +11,7 @@
   "dependencies": {
     "amqp": "^0.2.0",
     "lodash": "^2.4.1",
+    "jstk": "git://github.com/ifroz/jstk.git",
     "nconf": "^0.6.9",
     "solr-client": "^0.4.0"
   }

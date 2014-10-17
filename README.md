@@ -21,8 +21,6 @@ It is a wrapper, which aims to make delayed/remote execution of solr queries mor
       
     });
     
-    
-    
 
 Some dependencies can be injected if you wish, e.g.:
 
@@ -57,7 +55,6 @@ The options parameter accepts the following fields:
   - it's keys are keys of your existing model
   - it's values are field names in SOLR
   - Typically, this can be used to adapt to the default solr schema.xml, eg: ``{email: 'email_s'}``
-  - Currently, all the fields need to be defined here, not only the mapped ones.
 - ``transformations`` is an optional object which can be used for transforming the data before/after solr.
   - it's keys are keys of your existing model
   - it's values are objects with 2 fields:
@@ -65,16 +62,22 @@ The options parameter accepts the following fields:
   - ``toSolr: function(value) {return value; }``
 - ``mlt`` is an optional more like this setting to be used as default in the ``recommend`` method.
 
-It return an object with the following methods:
+It return a ``solrResource`` object;
+
+### solrResource
 
 - ``add(doc, cb)`` adds a document to the core
-- ``recommend(q, [mlt,] cb)`` runs a moreLikeThis query, mlt defaults to ``options.mlt`` if none given
-- ``find(q, cb)`` finds some fields
-- ``findById(id, cb)`` finds by id
+- ``moreLikeThis(q, [mlt,] cb)`` runs a moreLikeThis query, 
+mlt defaults to ``options.mlt`` if none given. Aliased as ``recommend``.
+- ``update(
+- ``find(q, cb)`` finds some fields by a query or an id
+- ``update(q, cb)`` finds some fields by a query or an id
+- ``delete(id, cb)`` deletes by a query, mapped from ``node-solr-client``
 - ``deleteById(id, cb)`` deletes by id
 - ``encode`` formats the document to solr (transposes field names and performs transformations)
 - ``deocde`` formats the document came back from solr (reverses field names and performs reverse transformations)
 - ``solr`` exposes the wrapped ``node-solr-client``
+
 
 ### amqp2solr.listen(queueName, solrResource[, cb])
 This function listens to the queue ``queueName`` on it's AMQP connection and processes queries sent via amqp2solr.
