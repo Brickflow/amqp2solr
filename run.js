@@ -4,7 +4,7 @@ var amqp2solr = require('./lib')({
   logger: require('./lib/consoleLogger')
 });
 
-var blogQueue = amqp2solr.getQueue({
+var blogQueue = amqp2solr.getAsymmetric({
   core: 'blogs',
   fields: {
     tumblrUsername: 'id',
@@ -32,5 +32,7 @@ var blogQueue = amqp2solr.getQueue({
     count: 100
   }
 });
+//var blogResource = blogQueue.resource;
 blogQueue.listen();
 blogQueue.createOrUpdate({id: 'phossquazzahl'}, { phosskazal_i:  10 });
+blogQueue.find('ifroz', function() { console.log('FOUND', arguments); });

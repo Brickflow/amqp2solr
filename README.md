@@ -76,6 +76,11 @@ Returns a ``solrQueue`` instance. If solrResourceOrOptions is not a
 solrResource,
 it calls getResource with solrResourceOrOptions.
 
+## ``getAsymmetric([queueName,] solrResourceOrOptions)``
+
+Returns an asymmetric (queued-write, direct-read), mixed resource which queues 
+inserts/updates/modifies but directly queries selects/moreLikeThis/... 
+
 ## ``solrQueue``
 
 ``solrQueue`` has exactly the same methods than a ``solrResource``, but it pushes the task to the queue rather than executing it locally.
