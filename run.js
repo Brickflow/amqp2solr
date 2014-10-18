@@ -20,10 +20,9 @@ var blogQueue = amqp2solr.getAsymmetric({
         return _.pluck(value, 'label');
       },
       fromSolr: function fromSolr(value) {
-        return {
-          label: value,
-          origin: 'solr'
-        };
+        return _.map(value, function (tag) {
+          return { label: tag, origin: 'solr' };
+        });
       }
     }
   },
@@ -34,5 +33,7 @@ var blogQueue = amqp2solr.getAsymmetric({
 });
 //var blogResource = blogQueue.resource;
 blogQueue.listen();
-blogQueue.createOrUpdate({id: 'phossquazzahl'}, { phosskazal_i:  10 });
-blogQueue.find('ifroz', function() { console.log('FOUND', arguments); });
+//blogQueue.createOrUpdate({id: 'phossquazzahl'}, { phosskazal_i:  10 });
+blogQueue.find('ifroz', function(err, res) {
+  console.log('FOUND', arguments, res[0].hashtags);
+});
