@@ -33,7 +33,3 @@ var blogQueue = amqp2solr.getAsymmetric({
 });
 //var blogResource = blogQueue.resource;
 blogQueue.listen();
-//blogQueue.createOrUpdate({id: 'phossquazzahl'}, { phosskazal_i:  10 });
-blogQueue.find('ifroz', function(err, res) {
-  console.log('FOUND', arguments, res[0].hashtags);
-});
