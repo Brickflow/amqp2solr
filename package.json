@@ -1,6 +1,6 @@
 {
   "name": "amqp2solr",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "description": "Pulls from an AMQP queue and pushes to Solr",
   "main": "lib/index.js",
   "scripts": {
